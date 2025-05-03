@@ -1,0 +1,60 @@
+# Title: Transforming Healthcare with AI-Powered Disease Prediction
+
+# Step 1: Install and Import Libraries
+!pip install scikit-learn pandas matplotlib seaborn
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Step 2: Load Sample Healthcare Dataset (Diabetes)
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv"
+columns = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 
+           'BMI', 'DiabetesPedigreeFunction', 'Age', 'Outcome']
+
+df = pd.read_csv(url, names=columns)
+
+# Step 3: Explore the Data
+print("Dataset preview:")
+display(df.head())
+
+print("\nDataset summary:")
+print(df.describe())
+
+# Step 4: Visualize the Data
+sns.heatmap(df.corr(), annot=True)
+plt.title("Feature Correlation")
+plt.show()
+
+# Step 5: Split Data into Features and Labels
+X = df.drop('Outcome', axis=1)
+y = df['Outcome']
+
+# Step 6: Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 7: Train a Machine Learning Model
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Step 8: Evaluate the Model
+y_pred = model.predict(X_test)
+
+print("\nAccuracy Score:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+conf_mat = confusion_matrix(y_test, y_pred)
+sns.heatmap(conf_mat, annot=True, fmt="d")
+plt.title("Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+# Step 9: Predict on New Patient Data
+sample_patient = np.array([[2, 110, 70, 30, 100, 25.6, 0.627, 45]])  # Example input
+prediction = model.predict(sample_patient)
+print("\nPredicted Disease Outcome (1 = likely, 0 = unlikely):", prediction[0])
