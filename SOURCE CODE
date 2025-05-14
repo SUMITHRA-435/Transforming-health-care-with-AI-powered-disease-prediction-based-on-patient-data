@@ -1,0 +1,75 @@
+Import necessary libraries
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import streamlit as st
+
+Load dataset
+from sklearn.datasets import load_diabetes
+diabetes = load_diabetes()
+df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+df['target'] = diabetes.target
+
+Define features and target
+X = df.drop('target', axis=1)
+y = df['target']
+
+Split dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+Train a random forest classifier
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+Make predictions on the test set
+y_pred = model.predict(X_test)
+
+Evaluate model performance
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+Create a Streamlit app
+st.title("AI-Powered Disease Prediction System")
+st.write("This system predicts the likelihood of disease based on patient data.")
+
+Define input fields for user input
+age = st.number_input("Age", min_value=0, max_value=100)
+bmi = st.number_input("BMI", min_value=10.0, max_value=50.0)
+bp = st.number_input("Blood Pressure", min_value=50, max_value=200)
+
+Make predictions based on user input
+if st.button("Predict"):
+    input_data = pd.DataFrame([[age, bmi, bp]], columns=['age', 'bmi', 'bp'])
+    prediction = model.predict(input_data)
+    st.write("Prediction:", prediction)
+```
+
+Streamlit App:
+To deploy the model using Streamlit, you'll need to create a new file called `app.py` and add the following code:
+
+```
+import streamlit as st
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+Load dataset and train model
+...
+
+Create a Streamlit app
+st.title("AI-Powered Disease Prediction System")
+
+Define input fields for user input
+age = st.number_input("Age", min_value=0, max_value=100)
+bmi = st.number_input("BMI", min_value=10.0, max_value=50.0)
+bp = st.number_input("Blood Pressure", min_value=50, max_value=200)
+
+Make predictions based on user input
+if st.button("Predict"):
+    input_data = pd.DataFrame([[age, bmi, bp]], columns=['age', 'bmi', 'bp'])
+    prediction = model.predict(input_data)
+    st.write("Prediction:", prediction)
+```
